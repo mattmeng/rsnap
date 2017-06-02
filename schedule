@@ -1,2 +1,4 @@
-# m   h   dom mon dow command
-  *   *   *   *   *   ruby /root/rsnap.rb
+# m h    dom  mon dow command
+  0 1-23 *    *   *   /root/rsnap.rb hourly
+  0 0    2-31 *   *   /root/rsnap.rb daily
+  0 0    1    *   *   /root/rsnap.rb monthly

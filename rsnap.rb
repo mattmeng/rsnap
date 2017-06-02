@@ -1,3 +1,6 @@
+#! /usr/bin/env ruby
+
+
 require 'yaml'
 require 'logger'
 require_relative 'backup.rb'
@@ -58,20 +61,26 @@ config.each do |folder|
 end
 
 # -- Perform the Backup --
-case cmd = ARGV.shift
-when 'hourly'
-  $logger.debug( "Performing hourly backups." )
+cmd = ARGV.shift
+
+begin
   backups.each do |backup|
-    begin
+    case cmd
+    when 'hourly'
+      $logger.debug( "Performing hourly backups." )
       backup.hourly_snapshot!
-    rescue
-      $logger.error( $!.message )
+    when 'daily'
+      $logger.debug( "Performing daily backups." )
+      backup.daily_snapshot!
+    when 'monthly'
+      $logger.debug( "Performing monthly backups." )
+      backup.monthly_snapshot!
+    else
+      raise "Unknown command '#{cmd}'."
     end
   end
-when 'daily'
-when 'monthly'
-else
-  $logger.fatal( "Unknown command '#{cmd}'." )
+rescue
+  print_exception( 'Exception occurred', $! )
   quit 1
 end
 
