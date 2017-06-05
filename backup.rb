@@ -46,7 +46,7 @@ class Backup
 
   def cleanup( period, index, limit )
     Dir["#{@target_path}\/#{period}.*"].each do |path|
-      if ((index - limit + 1)..index) === path[/#{period}.(\d+)/, 1].to_i
+      unless ((index - limit + 1)...index) === path[/#{period}.(\d+)/, 1].to_i
         cmd( "rm -rf #{path}" )
       end
     end
