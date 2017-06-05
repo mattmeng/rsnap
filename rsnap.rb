@@ -78,6 +78,7 @@ begin
     else
       raise "Unknown command '#{cmd}'."
     end
+    $logger.debug( "Backup completed." )
   end
 rescue
   print_exception( 'Exception occurred', $! )

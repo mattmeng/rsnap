@@ -20,21 +20,48 @@ class Backup
     cmd( "rm -rf #{target_path}" ) if Dir.exists?( target_path )
     cmd( "cp -al #{source_path} #{target_path}" ) if source_path && Dir.exists?( source_path )
     cmd( "rsync -a -H --delete --numeric-ids #{@source_path}/* #{target_path}" )
+    cmd( "touch #{target_path}" )
   end
 
   def hourly_snapshot!
-    target_path = "#{@target_path}/#{HOURLY_PERIOD}.#{ENV['HOUR'] || DateTime.now.hour}"
+    hour = ENV['HOUR'] || DateTime.now.hour
+    hourly_cleanup( hour )
+    target_path = "#{@target_path}/#{HOURLY_PERIOD}.#{hour}"
     snapshot!( last_snapshot_path(), target_path )
   end
 
   def daily_snapshot!
-    target_path = "#{@target_path}/#{DAILY_PERIOD}.#{ENV['DAY'] || DateTime.now.day}"
+    day = ENV['DAY'] || DateTime.now.day
+    daily_cleanup( day )
+    target_path = "#{@target_path}/#{DAILY_PERIOD}.#{day}"
     snapshot!( last_snapshot_path(), target_path )
   end
 
   def monthly_snapshot!
-    target_path = "#{@target_path}/#{MONTHLY_PERIOD}.#{ENV['MONTH'] || DateTime.now.month}"
+    month = ENV['MONTH'] || DateTime.now.month
+    monthly_cleanup( month )
+    target_path = "#{@target_path}/#{MONTHLY_PERIOD}.#{month}"
     snapshot!( last_snapshot_path(), target_path )
+  end
+
+  def cleanup( period, index, limit )
+    Dir["#{@target_path}\/#{period}.*"].each do |path|
+      if ((index - limit + 1)..index) === path[/#{period}.(\d+)/, 1].to_i
+        cmd( "rm #{path}" )
+      end
+    end
+  end
+
+  def hourly_cleanup( hour )
+    cleanup( HOURLY_PERIOD, hour, 8 )
+  end
+
+  def daily_cleanup( day )
+    cleanup( DAILY_PERIOD, day, 7 )
+  end
+
+  def monthly_cleanup( month )
+    cleanup( MONTHLY_PERIOD, month, 6 )
   end
 
   private
