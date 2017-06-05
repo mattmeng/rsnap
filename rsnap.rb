@@ -67,18 +67,18 @@ begin
   backups.each do |backup|
     case cmd
     when 'hourly'
-      $logger.debug( "Performing hourly backups." )
+      $logger.warn( "Performing hourly backups." )
       backup.hourly_snapshot!
     when 'daily'
-      $logger.debug( "Performing daily backups." )
+      $logger.warn( "Performing daily backups." )
       backup.daily_snapshot!
     when 'monthly'
-      $logger.debug( "Performing monthly backups." )
+      $logger.warn( "Performing monthly backups." )
       backup.monthly_snapshot!
     else
       raise "Unknown command '#{cmd}'."
     end
-    $logger.debug( "Backup completed." )
+    $logger.warn( "Backup completed." )
   end
 rescue
   print_exception( 'Exception occurred', $! )
