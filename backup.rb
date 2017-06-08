@@ -19,7 +19,7 @@ class Backup
 
     cmd( "rm -rf #{target_path}" ) if Dir.exists?( target_path )
     cmd( "cp -al #{source_path} #{target_path}" ) if source_path && Dir.exists?( source_path )
-    cmd( "rsync -a -H --delete --numeric-ids #{@source_path}/* #{target_path}" )
+    cmd( "rsync -aH --delete --numeric-ids #{@source_path}/ #{target_path}" )
     cmd( "touch #{target_path}" )
   end
 
