@@ -11,15 +11,15 @@ class Backup
     @logger = logger
   end
 
-  def snapshot!( source_path, target_path )
+  def snapshot!( last_backup_path, target_path )
     if Dir["#{@source_path}/*"].empty?
       @logger.warn( "Directory #{@source_path} empty. Nothing to backup." )
       return
     end
 
     cmd( "rm -rf #{target_path}" ) if Dir.exists?( target_path )
-    cmd( "cp -al #{source_path} #{target_path}" ) if source_path && Dir.exists?( source_path )
-    cmd( "rsync -aH --delete --numeric-ids #{@source_path}/ #{target_path}" )
+    cmd( "cp -al #{last_backup_path} #{target_path}" ) if last_backup_path && Dir.exists?( last_backup_path )
+    cmd( "rsync -aH --delete --numeric-ids --link-dest=#{last_backup_path} #{@source_path}/ #{target_path}" )
     cmd( "touch #{target_path}" )
   end
 
