@@ -67,13 +67,13 @@ begin
   backups.each do |backup|
     case cmd
     when 'hourly'
-      $logger.warn( "Performing hourly backups." )
+      $logger.warn( "Performing hourly backup on '#{backup.source_path}'." )
       backup.hourly_snapshot!
     when 'daily'
-      $logger.warn( "Performing daily backups." )
+      $logger.warn( "Performing daily backup on '#{backup.source_path}'." )
       backup.daily_snapshot!
     when 'monthly'
-      $logger.warn( "Performing monthly backups." )
+      $logger.warn( "Performing monthly backup on '#{backup.source_path}'." )
       backup.monthly_snapshot!
     else
       raise "Unknown command '#{cmd}'."

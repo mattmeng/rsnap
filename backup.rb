@@ -5,6 +5,8 @@ class Backup
   DAILY_PERIOD = 'daily'
   MONTHLY_PERIOD = 'monthly'
 
+  attr_reader :source_path, :target_path
+
   def initialize( source_path, target_path, logger )
     @source_path = source_path
     @target_path = target_path
@@ -17,9 +19,10 @@ class Backup
       return
     end
 
-    cmd( "rm -rf #{target_path}" ) if Dir.exists?( target_path )
-    cmd( "cp -al #{last_backup_path} #{target_path}" ) if last_backup_path && Dir.exists?( last_backup_path )
-    cmd( "rsync -aH --delete --numeric-ids --link-dest=#{last_backup_path} #{@source_path}/ #{target_path}" )
+    args = []
+    args << '-a --delete --numeric-ids'
+    args << "--link-dest=#{last_backup_path}" if last_backup_path && Dir.exists?( last_backup_path )
+    cmd( "rsync #{args.join( ' ' )} #{@source_path}/ #{target_path}" )
     cmd( "touch #{target_path}" )
   end
 
@@ -46,7 +49,7 @@ class Backup
 
   def cleanup( period, index, limit )
     Dir["#{@target_path}\/#{period}.*"].each do |path|
-      unless ((index - limit + 1)...index) === path[/#{period}.(\d+)/, 1].to_i
+      unless ((index - limit + 1)..index) === path[/#{period}.(\d+)/, 1].to_i
         cmd( "rm -rf #{path}" )
       end
     end
